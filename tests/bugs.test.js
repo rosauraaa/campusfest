@@ -37,7 +37,7 @@ test.skip('[BUG-1] Los eventos se ordenan por fecha real (noviembre antes que di
   assert.deepEqual(ordenados.map((e) => e.id), ['hackathon', 'feria', 'posada']);
 });
 
-test.skip('[BUG-2] La búsqueda ignora acentos y mayúsculas', () => {
+test('[BUG-2] La búsqueda ignora acentos y mayúsculas', () => {
   const brazo = event({ title: 'Brazo robótico con Arduino', categoryLabel: 'Robótica' });
   assert.equal(matchesSearch(brazo, 'robotica'), true, '"robotica" debe encontrar "Robótica"');
   assert.equal(matchesSearch(brazo, 'ROBÓTICO'), true, '"ROBÓTICO" debe encontrar "robótico"');

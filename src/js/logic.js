@@ -71,7 +71,7 @@ export function sortByDate(events) {
 // ---------- Búsqueda y filtros ----------
 
 export function matchesSearch(event, query) {
-  const text = `${event.title} ${event.venue} ${event.categoryLabel}`.toLowerCase();
+  const text = ${event.title} ${event.venue} ${event.categoryLabel}.toLowerCase();
   return text.includes(query.trim().toLowerCase());
 }
 
@@ -83,4 +83,16 @@ export function filterEvents(events, { query = '', category = 'todas', day = nul
     if (query && !matchesSearch(event, query)) return false;
     return true;
   });
+}
+
+function normalizeText(str) {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+export function matchesSearch(event, query) {
+  const text = normalizeText(${event.title} ${event.venue} ${event.categoryLabel});
+  return text.includes(normalizeText(query.trim()));
 }
