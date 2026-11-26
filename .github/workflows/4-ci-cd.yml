@@ -1,0 +1,103 @@
+# 4 · CI/CD
+# ¿Qué hace?  Valida → compila → publica en GitHub Pages.
+#             Si "Validar" falla, NO se publica: tu sitio en línea nunca se rompe.
+# ¿Cuándo?    Cada vez que algo llega a main, y a mano.
+name: "4 · CI/CD"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Evita que dos publicaciones se encimen.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  validar:
+    name: 1 · Validar
+    uses: ./.github/workflows/1-validar.yml
+
+  compilar:
+    name: 2 · Compilar
+    needs: validar
+    uses: ./.github/workflows/2-compilar.yml
+
+  empaquetar:
+    name: 📦 Empaquetar para Pages
+    needs: compilar
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 📥 Descargar el sitio compilado
+        uses: actions/download-artifact@v8
+        with:
+          name: campusfest-sitio
+          path: dist
+
+      - name: ⬆️ Preparar el sitio para Pages
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  # Publicar va en un job aparte: si falla, "Re-run failed jobs" lo reintenta
+  # sin volver a subir el paquete (subirlo dos veces rompe el despliegue).
+  publicar:
+    name: 🚀 Publicar en GitHub Pages
+    needs: empaquetar
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+    steps:
+      - name: 🔍 Verificar que GitHub Pages esté activado
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh api "repos/${GITHUB_REPOSITORY}/pages" --silent 2>/dev/null; then
+            echo "::error title=GitHub Pages no está activado::Ve a Settings → Pages → Build and deployment → Source y elige 'GitHub Actions'. Después regresa aquí y presiona 'Re-run failed jobs'."
+            {
+              echo "## ⚠️ Falta activar GitHub Pages"
+              echo ""
+              echo "1. Abre **Settings → Pages**: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/settings/pages"
+              echo "2. En **Build and deployment → Source**, elige **GitHub Actions**."
+              echo "3. Regresa a este run y presiona **Re-run failed jobs**."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "GitHub Pages está activado ✅"
+
+      - name: ⚙️ Configurar GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: 🚀 Publicar
+        id: deploy
+        continue-on-error: true
+        uses: actions/deploy-pages@v5
+
+      # GitHub a veces tarda unos segundos en "ver" el paquete recién subido. Esperamos y reintentamos.
+      - name: ⏳ Esperar y reintentar si falló
+        if: steps.deploy.outcome == 'failure'
+        run: |
+          echo "::warning::La primera publicación falló (suele ser temporal). Reintentando en 20 segundos…"
+          sleep 20
+
+      - name: 🚀 Publicar (reintento)
+        id: retry
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+
+      - name: 🔗 Mostrar la dirección del sitio
+        env:
+          PAGE_URL: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+        run: |
+          echo "Tu sitio está publicado en: $PAGE_URL"
+          echo "## 🚀 Publicado: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,48 @@
+# 3 · Respaldo
+# ¿Qué hace?  Crea un ZIP con todo el código del repositorio.
+#             - Siempre lo guarda como artefacto (30 días).
+#             - Si lo ejecutas a mano (Run workflow), además crea una Release descargable.
+# ¿Cuándo?    Cada vez que algo llega a main, y a mano.
+name: "3 · Respaldo"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  respaldo:
+    name: 🗄️ Respaldar el código
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 📥 Descargar el código del repositorio
+        uses: actions/checkout@v7
+
+      - name: 🗜️ Crear el ZIP de respaldo
+        run: |
+          STAMP=$(TZ=America/Mexico_City date +%Y%m%d-%H%M%S)
+          echo "STAMP=$STAMP" >> "$GITHUB_ENV"
+          git archive --format=zip --output="campusfest-respaldo-$STAMP.zip" HEAD
+          echo "Respaldo creado: campusfest-respaldo-$STAMP.zip ($(du -h campusfest-respaldo-$STAMP.zip | cut -f1))"
+
+      - name: ⬆️ Guardar el ZIP como artefacto
+        uses: actions/upload-artifact@v7
+        with:
+          name: respaldo-${{ env.STAMP }}
+          path: campusfest-respaldo-${{ env.STAMP }}.zip
+          retention-days: 30
+
+      - name: 🏷️ Publicar Release (solo al ejecutarlo a mano)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "respaldo-$STAMP" "campusfest-respaldo-$STAMP.zip" \
+            --title "Respaldo $STAMP" \
+            --notes "Respaldo manual del commit ${GITHUB_SHA::7}, creado por @${GITHUB_ACTOR}." \
+            --target "$GITHUB_SHA"
+          echo "## 🏷️ Release publicada: respaldo-$STAMP" >> "$GITHUB_STEP_SUMMARY"

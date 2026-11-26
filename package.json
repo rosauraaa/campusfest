@@ -1,0 +1,18 @@
+{
+  "name": "campusfest",
+  "version": "1.0.0",
+  "private": true,
+  "description": "App ficticia para el taller \"Del código a la entrega: automatiza pruebas con GitHub Actions\".",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "check": "node scripts/check-site.mjs",
+    "test": "node --test --test-reporter=./scripts/reporter.mjs \"tests/**/*.test.js\"",
+    "build": "node scripts/build.mjs",
+    "ci": "npm run check && npm test && npm run build"
+  },
+  "license": "MIT"
+}

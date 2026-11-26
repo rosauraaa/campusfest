@@ -1,0 +1,32 @@
+# 1 · Validar
+# ¿Qué hace?  Revisa que el código esté sano y corre las pruebas.
+# ¿Cuándo?    En cada Pull Request, a mano (Run workflow) y como primer paso de "4 · CI/CD".
+name: "1 · Validar"
+
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    name: 🔎 Revisar código y 🧪 pruebas
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 📥 Descargar el código del repositorio
+        uses: actions/checkout@v7
+
+      - name: 🟢 Preparar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: 🔎 Revisar archivos y sintaxis
+        run: node scripts/check-site.mjs
+
+      - name: 🧪 Ejecutar pruebas
+        run: node --test --test-reporter=./scripts/reporter.mjs "tests/**/*.test.js"

@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.zip
+.playwright-mcp/
+instructor/marcador/state.json
+instructor/marcador/participantes.txt

@@ -1,0 +1,50 @@
+# 2 · Compilar
+# ¿Qué hace?  Prepara el sitio que se va a publicar (carpeta dist/) y lo guarda como artefacto.
+# ¿Cuándo?    En cada Pull Request, a mano (Run workflow) y como segundo paso de "4 · CI/CD".
+name: "2 · Compilar"
+
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  compilar:
+    name: 📦 Compilar el sitio
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 📥 Descargar el código del repositorio
+        uses: actions/checkout@v7
+
+      - name: 🟢 Preparar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: 📦 Compilar (src/ → dist/)
+        run: node scripts/build.mjs
+
+      - name: 📝 Resumen de la compilación
+        run: |
+          {
+            echo "## 📦 Sitio compilado"
+            echo ""
+            echo "| Dato | Valor |"
+            echo "|---|---|"
+            echo "| Versión | $(node -p "require('./dist/version.json').version") |"
+            echo "| Commit | \`${GITHUB_SHA::7}\` |"
+            echo "| Archivos | $(find dist -type f | wc -l) |"
+            echo "| Tamaño | $(du -sh dist | cut -f1) |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: ⬆️ Guardar el sitio como artefacto
+        uses: actions/upload-artifact@v7
+        with:
+          name: campusfest-sitio
+          path: dist/
+          retention-days: 7
+          if-no-files-found: error

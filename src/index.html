@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CampusFest · Semana de Ingeniería</title>
+  <meta name="description" content="Cartelera ficticia de eventos estudiantiles para el taller de GitHub Actions.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2315161a'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%2315161a' stroke='%23fff' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="preload" href="fonts/Outfit-Variable.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="i-hack" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6 2.5 12 8 18"/><path d="M16 6l5.5 6L16 18"/><path d="M13.5 4 10.5 20"/></symbol>
+    <symbol id="i-robo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="14" r="1.2" fill="currentColor"/><circle cx="15" cy="14" r="1.2" fill="currentColor"/></symbol>
+    <symbol id="i-conf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></symbol>
+    <symbol id="i-esp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10a5 5 0 0 1 4.6 7l-1.2 2.8a2.5 2.5 0 0 1-4.2.6L14 15h-4l-2.2 2.4a2.5 2.5 0 0 1-4.2-.6L2.4 14A5 5 0 0 1 7 7Z"/><path d="M7.5 10v3M6 11.5h3"/><circle cx="16.5" cy="11.5" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-feria" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.9V16h5v-.2c0-.8.4-1.5 1-1.9A6 6 0 0 0 12 3Z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v8a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2Z"/><path d="M14 6v12" stroke-dasharray="2 2.5"/></symbol>
+  </svg>
+
+  <header class="shell">
+    <div class="shell-row">
+      <h1 class="brand">CampusFest <span>Semana de Ingeniería · 23–27 de noviembre</span></h1>
+      <button class="btn btn-on-dark" id="mine-toggle" type="button" aria-pressed="false">
+        <svg aria-hidden="true"><use href="#i-ticket"/></svg><span>Mis inscripciones (0)</span>
+      </button>
+    </div>
+    <nav class="week" aria-label="Días de la semana">
+      <ol class="week-stations" id="week-stations"></ol>
+    </nav>
+  </header>
+
+  <main class="page">
+    <div class="toolbar">
+      <label class="search">
+        <svg aria-hidden="true"><use href="#i-search"/></svg>
+        <span class="visually-hidden">Buscar</span>
+        <input id="search" type="search" placeholder="Buscar evento, lugar o tema" autocomplete="off">
+      </label>
+      <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría"></div>
+      <p class="results" id="results-summary" aria-live="polite"></p>
+    </div>
+
+    <section class="events" id="events" aria-label="Eventos"></section>
+
+    <div class="app-error" id="app-error" role="alert" hidden>
+      <h2>CampusFest no pudo cargarse</h2>
+      <p>Algo en el código falló. Abre la consola del navegador (F12) o revisa la pestaña <b>Actions</b> de tu repositorio para ver el detalle.</p>
+      <code></code>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>CampusFest es un proyecto <b>ficticio</b> para el taller “Del código a la entrega: automatiza pruebas con GitHub Actions”. Eventos, lugares y personas son inventados.</p>
+    <p class="build" id="build-info">Versión {{VERSION}} · commit {{COMMIT}} · compilado {{FECHA}}</p>
+  </footer>
+
+  <script type="module">
+    import('./js/app.js').catch((error) => {
+      console.error(error);
+      const panel = document.getElementById('app-error');
+      panel.hidden = false;
+      panel.querySelector('code').textContent = error.message;
+    });
+  </script>
+</body>
+</html>
