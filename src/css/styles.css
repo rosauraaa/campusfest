@@ -14,7 +14,7 @@
   --surface: #ffffff;
   --ink: #15161a;
   --ink-soft: #3d3e45;
-  --text-muted: #aba69d;
+  --text-muted: #0a62b8;
   --rule: #dadee5;
   --on-dark: #ffffff;
   --on-dark-soft: #c9cad1;
@@ -166,7 +166,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .event { display: grid; grid-template-rows: 1fr auto; gap: 16px; padding: 20px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
 .event-head { display: flex; gap: 14px; align-items: flex-start; }
 .event h3 { margin: 0 0 6px; font-size: var(--text-lg); line-height: 1.2; letter-spacing: -0.01em; text-wrap: balance; }
-.meta { display: grid; gap: 4px; margin: 0; font-size: var(--text-sm); color: var(--text-muted); }
+.meta {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
 .meta span { display: flex; align-items: center; gap: 6px; }
 .meta svg { width: 16px; height: 16px; }
 .event-foot {
