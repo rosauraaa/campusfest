@@ -13,34 +13,42 @@ function pad(number) {
   return String(number).padStart(2, '0');
 }
 
+function normalizeText(str) {
+  return String(str ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
 // ---------- Cupos ----------
 
 export function spotsLeft(event) {
-  return event.capacity - event.registered;
+  return Math.max(0, event.capacity - event.registered);
 }
 
 export function isFull(event) {
-  return spotsLeft(event) === 0;
+  return event.capacity - event.registered <= 0;
 }
 
 export function spotsLabel(event) {
   if (isFull(event)) {
     return 'Cupo lleno';
   }
-  return `${spotsLeft(event)} lugares`;
+  const left = spotsLeft(event);
+  return left === 1 ? '1 lugar' : `${left} lugares`;
 }
 
 // ---------- Precio ----------
 
 export function formatPrice(price) {
-  return `$${price}`;
+  return price === 0 ? 'Gratis' : `$${price}`;
 }
 
 // ---------- Fechas ----------
 
 export function formatShortDate(dateStr) {
   const date = toDate(dateStr);
-  return `${pad(date.getDate())}/${pad(date.getMonth())}`;
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}`;
 }
 
 export function weekdayName(dateStr) {
@@ -53,6 +61,9 @@ export function daysUntil(dateStr, todayStr) {
 
 export function countdownLabel(dateStr, todayStr) {
   const days = daysUntil(dateStr, todayStr);
+  if (days < 0) {
+    return 'Finalizado';
+  }
   if (days === 0) {
     return 'Hoy';
   }
@@ -63,16 +74,14 @@ export function countdownLabel(dateStr, todayStr) {
 }
 
 export function sortByDate(events) {
-  return [...events].sort((a, b) =>
-    formatShortDate(a.date).localeCompare(formatShortDate(b.date)),
-  );
+  return [...events].sort((a, b) => a.date.localeCompare(b.date));
 }
 
 // ---------- Búsqueda y filtros ----------
 
 export function matchesSearch(event, query) {
-  const text = `${event.title} ${event.venue} ${event.categoryLabel}`.toLowerCase();
-  return text.includes(query.trim().toLowerCase());
+  const text = normalizeText(`${event.title} ${event.venue} ${event.categoryLabel}`);
+  return text.includes(normalizeText(query).trim());
 }
 
 export function filterEvents(events, { query = '', category = 'todas', day = null, onlyMine = false, mine = [] } = {}) {

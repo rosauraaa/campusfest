@@ -22,7 +22,7 @@ import {
 
 const event = (overrides) => ({ id: 'x', title: 'Evento', venue: 'Aula', categoryLabel: 'Feria', date: '2026-11-26', capacity: 10, registered: 0, price: 0, ...overrides });
 
-test.skip('[BUG-0 · guiado] Los cupos nunca son negativos y un evento sobrevendido está lleno', () => {
+test('[BUG-0 · guiado] Los cupos nunca son negativos y un evento sobrevendido está lleno', () => {
   const sobrevendido = event({ capacity: 30, registered: 33 });
   assert.equal(spotsLeft(sobrevendido), 0, 'spotsLeft no debe regresar números negativos');
   assert.equal(isFull(sobrevendido), true, 'un evento con más inscritos que cupo debe estar lleno');
@@ -37,7 +37,7 @@ test.skip('[BUG-1] Los eventos se ordenan por fecha real (noviembre antes que di
   assert.deepEqual(ordenados.map((e) => e.id), ['hackathon', 'feria', 'posada']);
 });
 
-test.skip('[BUG-2] La búsqueda ignora acentos y mayúsculas', () => {
+test('[BUG-2] La búsqueda ignora acentos y mayúsculas', () => {
   const brazo = event({ title: 'Brazo robótico con Arduino', categoryLabel: 'Robótica' });
   assert.equal(matchesSearch(brazo, 'robotica'), true, '"robotica" debe encontrar "Robótica"');
   assert.equal(matchesSearch(brazo, 'ROBÓTICO'), true, '"ROBÓTICO" debe encontrar "robótico"');
@@ -48,7 +48,7 @@ test.skip('[BUG-3] La fecha corta muestra el mes correcto', () => {
   assert.equal(formatShortDate('2026-12-02'), '02/12');
 });
 
-test.skip('[BUG-4] Un evento sin costo dice "Gratis"', () => {
+test('[BUG-4] Un evento sin costo dice "Gratis"', () => {
   assert.equal(formatPrice(0), 'Gratis');
   assert.equal(formatPrice(50), '$50');
 });
