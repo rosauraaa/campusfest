@@ -22,7 +22,7 @@ import {
 
 const event = (overrides) => ({ id: 'x', title: 'Evento', venue: 'Aula', categoryLabel: 'Feria', date: '2026-11-26', capacity: 10, registered: 0, price: 0, ...overrides });
 
-test.skip('[BUG-0 · guiado] Los cupos nunca son negativos y un evento sobrevendido está lleno', () => {
+test('[BUG-0 · guiado] Los cupos nunca son negativos y un evento sobrevendido está lleno', () => {
   const sobrevendido = event({ capacity: 30, registered: 33 });
   assert.equal(spotsLeft(sobrevendido), 0, 'spotsLeft no debe regresar números negativos');
   assert.equal(isFull(sobrevendido), true, 'un evento con más inscritos que cupo debe estar lleno');
